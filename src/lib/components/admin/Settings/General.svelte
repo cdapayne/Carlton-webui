@@ -275,12 +275,20 @@
 							>
 								{$i18n.t('Activate')}
 							</button> -->
-						</div>
-					</div>
-				</div>
+                                                </div>
+                                        </div>
+                                </div>
+                                <div class="mb-2.5">
+                                        <div class=" self-center text-xs font-medium mb-2">{$i18n.t('App Name')}</div>
+                                        <input
+                                                class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+                                                type="text"
+                                                bind:value={adminConfig.WEBUI_NAME}
+                                        />
+                                </div>
 
-				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('Authentication')}</div>
+                                <div class="mb-3">
+                                        <div class=" mb-2.5 text-base font-medium">{$i18n.t('Authentication')}</div>
 
 					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
 

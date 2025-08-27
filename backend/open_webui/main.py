@@ -312,7 +312,6 @@ from open_webui.config import (
     EXTERNAL_WEB_LOADER_API_KEY,
     # WebUI
     WEBUI_AUTH,
-    WEBUI_NAME,
     WEBUI_BANNERS,
     WEBHOOK_URL,
     ADMIN_EMAIL,
@@ -376,6 +375,7 @@ from open_webui.config import (
     OAUTH_PROVIDERS,
     WEBUI_URL,
     RESPONSE_WATERMARK,
+    WEBUI_NAME,
     # Admin
     ENABLE_ADMIN_CHAT_ACCESS,
     BYPASS_ADMIN_ACCESS_CONTROL,
@@ -601,7 +601,8 @@ app.state.config = AppConfig(
 )
 app.state.redis = None
 
-app.state.WEBUI_NAME = WEBUI_NAME
+app.state.config.WEBUI_NAME = WEBUI_NAME
+app.state.WEBUI_NAME = app.state.config.WEBUI_NAME
 app.state.LICENSE_METADATA = None
 
 

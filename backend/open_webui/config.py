@@ -1448,6 +1448,8 @@ class BannerModel(BaseModel):
     timestamp: int
 
 
+WEBUI_NAME = PersistentConfig("WEBUI_NAME", "ui.name", WEBUI_NAME)
+
 try:
     banners = json.loads(os.environ.get("WEBUI_BANNERS", "[]"))
     banners = [BannerModel(**banner) for banner in banners]
