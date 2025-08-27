@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, UploadFile, File
 from pydantic import BaseModel, ConfigDict
 
 from typing import Optional
 
 from open_webui.utils.auth import get_admin_user, get_verified_user
-from open_webui.config import get_config, save_config
-from open_webui.config import BannerModel
+from open_webui.config import get_config, save_config, BannerModel, STATIC_DIR
 
 from open_webui.utils.tools import (
     get_tool_server_data,
@@ -328,3 +327,34 @@ async def get_banners(
     user=Depends(get_verified_user),
 ):
     return request.app.state.config.BANNERS
+
+
+############################
+# Favicon
+############################
+
+
+@router.post("/favicon")
+async def upload_favicon(
+    request: Request,
+    file: UploadFile = File(...),
+    user=Depends(get_admin_user),
+):
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid image file")
+
+    contents = await file.read()
+
+    for path in [STATIC_DIR / "favicon.png", STATIC_DIR / "static" / "favicon.png"]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "wb") as f:
+            f.write(contents)
+
+    if getattr(request.app.state.config, "WEBUI_URL", ""):
+        request.app.state.config.WEBUI_FAVICON_URL = (
+            f"{request.app.state.config.WEBUI_URL}/static/favicon.png"
+        )
+    else:
+        request.app.state.config.WEBUI_FAVICON_URL = "/static/favicon.png"
+
+    return {"status": "ok"}

@@ -5,16 +5,16 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import { toast } from 'svelte-sonner';
 
-	import { getBackendConfig, getModels, getTaskConfig, updateTaskConfig } from '$lib/apis';
-	import { setDefaultPromptSuggestions } from '$lib/apis/configs';
-	import { config, settings, user } from '$lib/stores';
-	import { createEventDispatcher, onMount, getContext } from 'svelte';
+        import { getBackendConfig, getModels, getTaskConfig, updateTaskConfig } from '$lib/apis';
+        import { setDefaultPromptSuggestions, getBanners, setBanners, uploadFavicon } from '$lib/apis/configs';
+        import { config, settings, user } from '$lib/stores';
+        import { createEventDispatcher, onMount, getContext } from 'svelte';
 
-	import { banners as _banners } from '$lib/stores';
-	import type { Banner } from '$lib/types';
+        import { banners as _banners } from '$lib/stores';
+        import type { Banner } from '$lib/types';
 
-	import { getBaseModels } from '$lib/apis/models';
-	import { getBanners, setBanners } from '$lib/apis/configs';
+        import { getBaseModels } from '$lib/apis/models';
+        import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
@@ -44,18 +44,26 @@
 		TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE: ''
 	};
 
-	let promptSuggestions = [];
-	let banners: Banner[] = [];
+        let promptSuggestions = [];
+        let banners: Banner[] = [];
+        let faviconFile: File | null = null;
+        let faviconUrl = `${WEBUI_BASE_URL}/static/favicon.png`;
 
-	const updateInterfaceHandler = async () => {
-		taskConfig = await updateTaskConfig(localStorage.token, taskConfig);
+        const updateInterfaceHandler = async () => {
+                taskConfig = await updateTaskConfig(localStorage.token, taskConfig);
 
-		promptSuggestions = promptSuggestions.filter((p) => p.content !== '');
-		promptSuggestions = await setDefaultPromptSuggestions(localStorage.token, promptSuggestions);
-		await updateBanners();
+                promptSuggestions = promptSuggestions.filter((p) => p.content !== '');
+                promptSuggestions = await setDefaultPromptSuggestions(localStorage.token, promptSuggestions);
+                await updateBanners();
 
-		await config.set(await getBackendConfig());
-	};
+                if (faviconFile) {
+                        await uploadFavicon(localStorage.token, faviconFile);
+                        faviconUrl = `${WEBUI_BASE_URL}/static/favicon.png?t=${Date.now()}`;
+                        faviconFile = null;
+                }
+
+                await config.set(await getBackendConfig());
+        };
 
 	const updateBanners = async () => {
 		_banners.set(await setBanners(localStorage.token, banners));
@@ -386,13 +394,31 @@
 			<div class="mb-3.5">
 				<div class=" mb-2.5 text-base font-medium">{$i18n.t('UI')}</div>
 
-				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+                                <hr class=" border-gray-100 dark:border-gray-850 my-2" />
 
-				<div class="mb-2.5">
-					<div class="flex w-full justify-between">
-						<div class=" self-center text-xs">
-							{$i18n.t('Banners')}
-						</div>
+                                <div class="mb-2.5">
+                                        <div class=" mb-1 text-xs font-medium">{$i18n.t('Favicon')}</div>
+                                        <div class="flex items-center space-x-2">
+                                                <img src={faviconUrl} alt="favicon" class="size-6 rounded" />
+                                                <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        class="text-xs"
+                                                        on:change={(e) => {
+                                                                const files = (e.target as HTMLInputElement).files;
+                                                                if (files && files.length) {
+                                                                        faviconFile = files[0];
+                                                                }
+                                                        }}
+                                                />
+                                        </div>
+                                </div>
+
+                                <div class="mb-2.5">
+                                        <div class="flex w-full justify-between">
+                                                <div class=" self-center text-xs">
+                                                        {$i18n.t('Banners')}
+                                                </div>
 
 						<button
 							class="p-1 px-3 text-xs flex rounded-sm transition"

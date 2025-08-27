@@ -400,5 +400,35 @@ export const setBanners = async (token: string, banners: Banner[]) => {
 		throw error;
 	}
 
-	return res;
+        return res;
+};
+
+export const uploadFavicon = async (token: string, file: File) => {
+        let error = null;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch(`${WEBUI_API_BASE_URL}/configs/favicon`, {
+                method: 'POST',
+                headers: {
+                        Authorization: `Bearer ${token}`
+                },
+                body: formData
+        })
+                .then(async (res) => {
+                        if (!res.ok) throw await res.json();
+                        return res.json();
+                })
+                .catch((err) => {
+                        console.error(err);
+                        error = err.detail;
+                        return null;
+                });
+
+        if (error) {
+                throw error;
+        }
+
+        return res;
 };
