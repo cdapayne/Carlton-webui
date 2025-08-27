@@ -7,7 +7,7 @@
 		<link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
 		<link rel="shortcut icon" href="/static/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
-		<meta name="apple-mobile-web-app-title" content="Open WebUI" />
+		<meta name="apple-mobile-web-app-title" content="Hey! Carlton" />
 
 		<link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 		<meta
@@ -16,11 +16,11 @@
 		/>
 		<meta name="theme-color" content="#171717" />
 		<meta name="robots" content="noindex,nofollow" />
-		<meta name="description" content="Open WebUI" />
+		<meta name="description" content="Hey! Carlton" />
 		<link
 			rel="search"
 			type="application/opensearchdescription+xml"
-			title="Open WebUI"
+			title="Hey! Carlton"
 			href="/opensearch.xml"
 		/>
 		<script src="/static/loader.js" defer></script>
@@ -79,10 +79,14 @@
 				const isDarkMode = document.documentElement.classList.contains('dark');
 
 				const logo = document.createElement('img');
-				logo.id = 'logo';
+                                const storedLogo = localStorage.getItem('customLogo');
+                                logo.id = 'logo';
 				logo.style =
 					'position: absolute; width: auto; height: 6rem; top: 44%; left: 50%; transform: translateX(-50%); display:block;';
-				logo.src = isDarkMode ? '/static/splash-dark.png' : '/static/splash.png';
+				logo.src = storedLogo || (isDarkMode ? '/static/splash-dark.png' : '/static/splash.png');
+                                if (storedLogo) {
+                                        document.querySelectorAll("link[rel='icon'], link[rel='apple-touch-icon'], link[rel='shortcut icon']").forEach((el) => (el.href = storedLogo));
+                                }
 
 				document.addEventListener('DOMContentLoaded', function () {
 					const splash = document.getElementById('splash-screen');
@@ -91,11 +95,15 @@
 					}
 
 					if (splash) splash.prepend(logo);
+                                        if (storedLogo) {
+                                                const logoHer = document.getElementById('logo-her');
+                                                if (logoHer) logoHer.src = storedLogo;
+                                        }
 				});
 			})();
 		</script>
 
-		<title>Open WebUI</title>
+		<title>Hey! Carlton</title>
 
 		%sveltekit.head%
 	</head>

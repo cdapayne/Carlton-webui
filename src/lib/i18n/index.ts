@@ -3,6 +3,7 @@ import resourcesToBackend from 'i18next-resources-to-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import type { i18n as i18nType } from 'i18next';
 import { writable } from 'svelte/store';
+import { APP_NAME } from '$lib/constants';
 
 const createI18nStore = (i18n: i18nType) => {
 	const i18nWritable = writable(i18n);
@@ -45,27 +46,28 @@ export const initI18n = (defaultLocale?: string | undefined) => {
 
 	const loadResource = (language: string, namespace: string) =>
 		import(`./locales/${language}/${namespace}.json`);
-
-	i18next
-		.use(resourcesToBackend(loadResource))
-		.use(LanguageDetector)
-		.init({
-			debug: false,
-			detection: {
-				order: detectionOrder,
-				caches: ['localStorage'],
-				lookupQuerystring: 'lang',
-				lookupLocalStorage: 'locale'
-			},
-			fallbackLng: {
-				default: fallbackDefaultLocale
-			},
-			ns: 'translation',
-			returnEmptyString: false,
-			interpolation: {
-				escapeValue: false // not needed for svelte as it escapes by default
-			}
-		});
+        i18next
+                .use({ type: 'postProcessor', name: 'brand', process: (value) => value.replace(/Open WebUI/g, APP_NAME) })
+                .use(resourcesToBackend(loadResource))
+                .use(LanguageDetector)
+                .init({
+                        debug: false,
+                        detection: {
+                                order: detectionOrder,
+                                caches: ['localStorage'],
+                                lookupQuerystring: 'lang',
+                                lookupLocalStorage: 'locale'
+                        },
+                        fallbackLng: {
+                                default: fallbackDefaultLocale
+                        },
+                        ns: 'translation',
+                        returnEmptyString: false,
+                        interpolation: {
+                                escapeValue: false // not needed for svelte as it escapes by default
+                        },
+                        postProcess: ['brand']
+                });
 
 	const lang = i18next?.language || defaultLocale || 'en-US';
 	document.documentElement.setAttribute('lang', lang);
