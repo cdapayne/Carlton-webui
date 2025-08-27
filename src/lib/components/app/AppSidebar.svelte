@@ -2,8 +2,14 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+        import { customLogo } from '$lib/stores';
 
-	let selected = '';
+        let selected = '';
+        let logoLarge: string;
+        let logoSmall: string;
+
+        $: logoLarge = $customLogo || `${WEBUI_BASE_URL}/static/splash.png`;
+        $: logoSmall = $customLogo || `${WEBUI_BASE_URL}/static/favicon.png`;
 </script>
 
 <div class="min-w-[4.5rem] bg-gray-50 dark:bg-gray-950 flex gap-2.5 flex-col pt-8">
@@ -26,7 +32,7 @@
 				}}
 			>
 				<img
-					src="{WEBUI_BASE_URL}/static/splash.png"
+					src="{logoLarge}"
 					class="size-11 dark:invert p-0.5"
 					alt="logo"
 					draggable="false"
@@ -50,7 +56,7 @@
 			}}
 		>
 			<img
-				src="{WEBUI_BASE_URL}/static/favicon.png"
+				src="{logoSmall}"
 				class="size-10 {selected === '' ? 'rounded-2xl' : 'rounded-full'}"
 				alt="logo"
 				draggable="false"

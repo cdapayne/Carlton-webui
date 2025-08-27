@@ -59,6 +59,12 @@
 
 	setContext('i18n', i18n);
 
+customLogo.subscribe((value) => {
+        if (value) {
+                document.querySelectorAll("link[rel='icon'], link[rel='apple-touch-icon'], link[rel='shortcut icon']").forEach((el) => el.setAttribute('href', value));
+        }
+});
+
 	const bc = new BroadcastChannel('active-tab-channel');
 
 	let loaded = false;
@@ -468,6 +474,11 @@
 	};
 
 	onMount(async () => {
+                const storedLogo = localStorage.getItem('customLogo');
+                if (storedLogo) {
+                        customLogo.set(storedLogo);
+                        document.querySelectorAll("link[rel='icon'], link[rel='apple-touch-icon'], link[rel='shortcut icon']").forEach((el) => el.setAttribute('href', storedLogo));
+                }
 		if (typeof window !== 'undefined' && window.applyTheme) {
 			window.applyTheme();
 		}
