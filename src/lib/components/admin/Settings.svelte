@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 
-	import { config } from '$lib/stores';
+        import { config, WEBUI_NAME } from '$lib/stores';
 	import { getBackendConfig } from '$lib/apis';
 	import Database from './Settings/Database.svelte';
 
@@ -435,14 +435,16 @@
 
 	<div class="flex-1 mt-3 lg:mt-0 overflow-y-scroll pr-1 scrollbar-hidden">
 		{#if selectedTab === 'general'}
-			<General
-				saveHandler={async () => {
-					toast.success($i18n.t('Settings saved successfully!'));
+                        <General
+                                saveHandler={async () => {
+                                        toast.success($i18n.t('Settings saved successfully!'));
 
-					await tick();
-					await config.set(await getBackendConfig());
-				}}
-			/>
+                                        await tick();
+                                        const newConfig = await getBackendConfig();
+                                        await config.set(newConfig);
+                                        await WEBUI_NAME.set(newConfig.name);
+                                }}
+                        />
 		{:else if selectedTab === 'connections'}
 			<Connections
 				on:save={() => {
