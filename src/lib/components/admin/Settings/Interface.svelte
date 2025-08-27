@@ -49,6 +49,14 @@
         let faviconFile: File | null = null;
         let faviconUrl = `${WEBUI_BASE_URL}/static/favicon.png`;
 
+        function handleFaviconChange(e: Event) {
+                const input = e.target as HTMLInputElement;
+                const files = input.files;
+                if (files && files.length) {
+                        faviconFile = files[0];
+                }
+        }
+
         const updateInterfaceHandler = async () => {
                 taskConfig = await updateTaskConfig(localStorage.token, taskConfig);
 
@@ -404,12 +412,7 @@
                                                         type="file"
                                                         accept="image/*"
                                                         class="text-xs"
-                                                        on:change={(e) => {
-                                                                const files = (e.target as HTMLInputElement).files;
-                                                                if (files && files.length) {
-                                                                        faviconFile = files[0];
-                                                                }
-                                                        }}
+                                                        on:change={handleFaviconChange}
                                                 />
                                         </div>
                                 </div>
